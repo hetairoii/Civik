@@ -1,18 +1,20 @@
-import { useState } from 'react'
+import { ThemeProvider } from './context/ThemeContext'
+import { Navbar } from './components/Navbar'
+import { Hero } from './components/Hero'
+import { CardsContainer } from './components/CardsContainer'
 import './App.css'
-import {Hero} from './components/Hero';
-import {CardsContainer} from './components/CardsContainer';
 
 function App() {
   return (
-    <>
-      <main className='bg-brand-beige flex justify-center'>
-        <section className='border-2 color-red-500 w-[296px] my-[80px]'>
-          <Hero />
-          <CardsContainer />
-        </section>
-      </main>
-    </>
+    <ThemeProvider>
+      <div className="min-h-screen flex flex-col transition-colors duration-300 bg-[var(--color-brand-beige)] dark:bg-gray-900">
+        <Navbar />
+        <main className='flex-grow pt-16'> {/* pt-16 to offset fixed navbar */}
+            <Hero />
+            <CardsContainer />
+        </main>
+      </div>
+    </ThemeProvider>
   )
 }
 

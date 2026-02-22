@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   /* Verde Oscuro - Ética y estabilidad */
@@ -9,4 +10,14 @@
   
   /* Azul Cielo - Paz y tranquilidad */
   --color-brand-blue: #87ceeb;
+}
+
+body {
+    background-color: var(--color-brand-beige);
+    color: #333;
+}
+
+.dark body {
+    background-color: #0f172a; /* Slate 900 for dark mode background */
+    color: #f5f5dc;
 }
