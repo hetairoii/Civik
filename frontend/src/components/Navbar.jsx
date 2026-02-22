@@ -1,23 +1,25 @@
 import React, { useState } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { Button } from './Button';
+import { Link, useNavigate } from 'react-router-dom';
 
 export const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
 return (
     <nav className="bg-[var(--color-brand-beige)] dark:bg-[var(--color-brand-green)] shadow-md transition-colors duration-300 w-full fixed top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between h-16">
                 <div className="flex items-center">
-                    <div className="h-10 w-10 mr-0 shrink-0">
+                    <Link to="/" className="h-10 w-10 mr-0 shrink-0">
                         <img
                             src={theme === 'dark' ? "/civik-logo-dark.png" : "/civik-logo.png"}
                             alt="civik-logo"
                             className="h-full w-full object-contain"
                         />
-                    </div>
+                    </Link>
                     <span className="text-2xl font-bold text-[var(--color-brand-green)] dark:text-[var(--color-brand-beige)]">
                         Civik
                     </span>
@@ -25,7 +27,7 @@ return (
 
                 {/* Desktop Menu */}
                 <div className="hidden md:flex items-center space-x-8">
-                    <a href="#" className="text-gray-700 dark:text-gray-200 hover:text-[var(--color-brand-green)] dark:hover:text-[var(--color-brand-blue)] transition-colors">Inicio</a>
+                    <Link to="/" className="text-gray-700 dark:text-gray-200 hover:text-[var(--color-brand-green)] dark:hover:text-[var(--color-brand-blue)] transition-colors">Inicio</Link>
                     <a href="#" className="text-gray-700 dark:text-gray-200 hover:text-[var(--color-brand-green)] dark:hover:text-[var(--color-brand-blue)] transition-colors">Casos</a>
                     <a href="#" className="text-gray-700 dark:text-gray-200 hover:text-[var(--color-brand-green)] dark:hover:text-[var(--color-brand-blue)] transition-colors">Nosotros</a>
                     
@@ -33,7 +35,7 @@ return (
                         {theme === 'light' ? '🌙' : '☀️'}
                     </Button>
                     
-                    <Button variant="primary">
+                    <Button variant={theme === "dark" ? "dark" : "outline"} onClick={() => navigate('/denuncia')}>
                         Denuncia Ahora
                     </Button>
                 </div>
@@ -62,15 +64,18 @@ return (
         {/* Mobile Menu */}
         {isOpen && (
             <div className="md:hidden bg-[var(--color-brand-beige)] dark:bg-[var(--color-brand-green)] px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <a href="#" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-white hover:bg-[var(--color-brand-blue)] hover:text-white">Inicio</a>
-                <a href="#" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-white hover:bg-[var(--color-brand-blue)] hover:text-white">Casos</a>
-                <a href="#" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-white hover:bg-[var(--color-brand-blue)] hover:text-white">Nosotros</a>
-                <div className="mt-4">
-                     <Button variant="primary" className="w-full">
-                        Denuncia Ahora
-                    </Button>
-                </div>
+            <Link to="/" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-white hover:bg-[var(--color-brand-blue)] hover:text-white">Inicio</Link>
+            <a href="#" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-white hover:bg-[var(--color-brand-blue)] hover:text-white">Casos</a>
+            <a href="#" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-white hover:bg-[var(--color-brand-blue)] hover:text-white">Nosotros</a>
+            <div className="mt-4">
+                <Button variant="primary" className="w-full" onClick={() => {
+                    navigate('/denuncia');
+                    setIsOpen(false);
+                }}>
+                    Denuncia Ahora
+                </Button>
             </div>
+                </div>
         )}
     </nav>
 );

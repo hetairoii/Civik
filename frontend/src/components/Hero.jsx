@@ -1,8 +1,9 @@
+import { useNavigate } from 'react-router-dom';
 import { Button } from './Button'
 import { useTheme } from '../context/ThemeContext';
 
 export const Hero = () => {
-
+  const navigate = useNavigate();
   const { theme } = useTheme();
   return (
     <div className="bg-[var(--color-brand-beige)] dark:bg-[var(--color-brand-green)] transition-colors duration-300 py-20 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center min-h-[60vh] text-center">
@@ -14,7 +15,7 @@ export const Hero = () => {
         Tu reporte es seguro y anónimo.
       </p>
       <div className="flex gap-4">
-        <Button variant={theme === "dark" ? "dark" : "primary"} onClick={() => console.log('Redirigir a denuncia')}>
+        <Button variant={theme === "dark" ? "dark" : "primary"} onClick={() => navigate('/denuncia')}>
           Realizar Denuncia
         </Button>
         <Button variant="outline">
