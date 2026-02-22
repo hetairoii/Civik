@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@theme {
+  /* Verde Oscuro - Ética y estabilidad */
+  --color-brand-green: #1a4d2e;
+  
+  /* Crema/Beige - Cercanía y calidez */
+  --color-brand-beige: #f5f5dc;
+  
+  /* Azul Cielo - Paz y tranquilidad */
+  --color-brand-blue: #87ceeb;
+}
