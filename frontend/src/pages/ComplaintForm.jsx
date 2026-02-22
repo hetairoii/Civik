@@ -86,24 +86,28 @@ export const ComplaintForm = () => {
         setIsSubmitting(true);
 
         try {
-            // Nota: En una implementación real con archivos (fotos/videos), usarías FormData.
-            // Por ahora enviamos JSON simple como placeholder hasta tener la lógica de archivos en backend.
-            /*
+            // VERSIÓN CORREGIDA: Usamos FormData para enviar archivos y texto
             const data = new FormData();
             data.append('fullName', formData.fullName);
             data.append('phone', formData.phone);
             data.append('email', formData.email);
             data.append('description', formData.description);
-            if (formData.idPhoto) data.append('idPhoto', formData.idPhoto);
-            formData.supportingDocs.forEach(file => data.append('supportingDocs', file));
-            */
+            
+            // Adjuntar foto de cédula si existe
+            if (formData.idPhoto) {
+                data.append('idPhoto', formData.idPhoto);
+            }
 
-             // Placeholder simple JSON request
-            const response = await axios.post('http://localhost:3000/api/denuncias', {
-                fullName: formData.fullName,
-                phone: formData.phone,
-                email: formData.email,
-                description: formData.description
+            // Adjuntar documentos de soporte (recorremos el array)
+            formData.supportingDocs.forEach((file) => {
+                data.append('supportingDocs', file);
+            });
+
+            // Enviamos el objeto FormData en lugar del JSON
+            const response = await axios.post('http://localhost:3000/api/denuncias', data, {
+                headers: {
+                    'Content-Type': 'multipart/form-data' // Importante para subida de archivos
+                }
             });
             
             console.log("Respuesta del backend:", response.data);
