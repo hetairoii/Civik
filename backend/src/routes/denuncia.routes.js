@@ -14,8 +14,8 @@ const upload = multer({
 });
 
 // Middleware para manejar los campos de archivos
+// NOTA: Se ha removido idPhoto ya que no se pide en la nueva versión
 const uploadFields = upload.fields([
-    { name: 'idPhoto', maxCount: 1 },
     { name: 'supportingDocs', maxCount: 10 }
 ]);
 

@@ -2,17 +2,14 @@ const supabase = require('../config/supabase');
 
 const createDenuncia = async (req, res) => {
     try {
-        const { fullName, phone, email, description } = req.body;
+        const { description } = req.body;
+        // Ahora sí usamos el user.id del token
+        const userId = req.user.id;
+        
         const files = req.files || {};
         
         // --- 1. Validaciones ---
-        const idPhoto = files['idPhoto'] ? files['idPhoto'][0] : null;
         const supportingDocs = files['supportingDocs'] || [];
-
-        // Validación foto cédula (25MB)
-        if (idPhoto && idPhoto.size > 25 * 1024 * 1024) {
-            return res.status(400).json({ message: 'La foto de la cédula excede el límite de 25MB.' });
-        }
 
         // Validación total documentos (300MB)
         const totalDocsSize = supportingDocs.reduce((acc, file) => acc + file.size, 0);
@@ -23,16 +20,15 @@ const createDenuncia = async (req, res) => {
         console.log('--- Iniciando registro de denuncia ---');
 
         // --- 2. Insertar Denuncia (Tabla Principal) ---
+        // Se asume que la tabla 'denuncias' ahora tiene columnas distintas
         const { data: denunciaData, error: denunciaError } = await supabase
             .from('denuncias')
             .insert([{ 
-                full_name: fullName, 
-                phone: phone, 
-                email: email, 
-                description: description 
+                description: description,
+                user_id: userId
             }])
             .select()
-            .single(); // Obtenemos un solo objeto
+            .single();
 
         if (denunciaError) throw denunciaError;
 
@@ -83,12 +79,6 @@ const createDenuncia = async (req, res) => {
 
             return { fileName, publicUrl: urlData.publicUrl };
         };
-
-        // Procesar Foto Cédula
-        if (idPhoto) {
-            const result = await uploadAndRecord(idPhoto, 'identity', 'id_photo');
-            if (result) uploadedFiles.push(result);
-        }
 
         // Procesar Documentos de Soporte
         for (const doc of supportingDocs) {
