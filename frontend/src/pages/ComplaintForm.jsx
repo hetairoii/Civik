@@ -7,10 +7,6 @@ import axios from 'axios';
 
 export const ComplaintForm = () => {
     const [formData, setFormData] = useState({
-        fullName: '',
-        idPhoto: null,
-        phone: '',
-        email: '',
         description: '',
         supportingDocs: []
     });
@@ -20,7 +16,6 @@ export const ComplaintForm = () => {
     const [errors, setErrors] = useState({});
     
     // Limits
-    const MAX_ID_PHOTO_SIZE_MB = 25;
     const MAX_DOCS_TOTAL_SIZE_MB = 300;
 
     const handleInputChange = (e) => {
@@ -30,20 +25,6 @@ export const ComplaintForm = () => {
         if (errors[name]) {
             setErrors(prev => ({ ...prev, [name]: null }));
         }
-    };
-
-    const handleIdPhotoUpload = (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const fileSizeMB = file.size / (1024 * 1024);
-        if (fileSizeMB > MAX_ID_PHOTO_SIZE_MB) {
-            setErrors(prev => ({ ...prev, idPhoto: `El archivo excede los ${MAX_ID_PHOTO_SIZE_MB}MB permitidos.` }));
-            return;
-        }
-
-        setFormData(prev => ({ ...prev, idPhoto: file }));
-        setErrors(prev => ({ ...prev, idPhoto: null }));
     };
 
     const handleSupportingDocsUpload = (e) => {
@@ -88,16 +69,9 @@ export const ComplaintForm = () => {
         try {
             // VERSIÓN CORREGIDA: Usamos FormData para enviar archivos y texto
             const data = new FormData();
-            data.append('fullName', formData.fullName);
-            data.append('phone', formData.phone);
-            data.append('email', formData.email);
             data.append('description', formData.description);
+            // NOTA: No enviamos datos personales porque se tomarán del usuario autenticado en el backend
             
-            // Adjuntar foto de cédula si existe
-            if (formData.idPhoto) {
-                data.append('idPhoto', formData.idPhoto);
-            }
-
             // Adjuntar documentos de soporte (recorremos el array)
             formData.supportingDocs.forEach((file) => {
                 data.append('supportingDocs', file);
@@ -152,82 +126,6 @@ export const ComplaintForm = () => {
                     </h2>
                     
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Nombre Completo */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Nombre Completo <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                                type="text"
-                                name="fullName"
-                                required
-                                value={formData.fullName}
-                                onChange={handleInputChange}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-[var(--color-brand-green)] focus:border-[var(--color-brand-green)] dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                placeholder="Juan Pérez"
-                            />
-                        </div>
-
-                        {/* Foto de Cédula */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Foto de Cédula/Identificación (Max 25MB) <span className="text-red-500">*</span>
-                            </label>
-                            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-[var(--color-brand-green)] transition-colors dark:border-gray-600">
-                                <div className="space-y-1 text-center">
-                                    <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>
-                                    <div className="flex text-sm text-gray-600 dark:text-gray-400">
-                                        <label htmlFor="id-photo-upload" className="relative cursor-pointer bg-white dark:bg-gray-800 rounded-md font-medium text-[var(--color-brand-green)] hover:text-green-500 focus-within:outline-none">
-                                            <span>Subir un archivo</span>
-                                            <input id="id-photo-upload" name="idPhoto" type="file" required accept="image/*" className="sr-only" onChange={handleIdPhotoUpload} />
-                                        </label>
-                                        <p className="pl-1">o arrastrar y soltar</p>
-                                    </div>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF hasta 25MB</p>
-                                </div>
-                            </div>
-                            {formData.idPhoto && (
-                                <p className="mt-2 text-sm text-green-600 dark:text-green-400 flex items-center">
-                                    <span className="mr-2">✓</span> Archivo seleccionado: {formData.idPhoto.name} ({(formData.idPhoto.size / 1024 / 1024).toFixed(2)} MB)
-                                </p>
-                            )}
-                            {errors.idPhoto && <p className="mt-2 text-sm text-red-600">{errors.idPhoto}</p>}
-                        </div>
-
-                        {/* Teléfono y Correo */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    Teléfono <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="tel"
-                                    name="phone"
-                                    required
-                                    value={formData.phone}
-                                    onChange={handleInputChange}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-[var(--color-brand-green)] focus:border-[var(--color-brand-green)] dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                    placeholder="+58 412 1234567"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    Correo Electrónico <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    required
-                                    value={formData.email}
-                                    onChange={handleInputChange}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-[var(--color-brand-green)] focus:border-[var(--color-brand-green)] dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                    placeholder="correo@ejemplo.com"
-                                />
-                            </div>
-                        </div>
-
                         {/* Descripción */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
