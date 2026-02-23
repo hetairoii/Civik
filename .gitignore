@@ -3,3 +3,9 @@ node_modules
 
 #environment variables
 .env
+
+#scripts
+backend/scripts/createAdmin.js
+
+#database files
+backend/supabase_schema.sql
