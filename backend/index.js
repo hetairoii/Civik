@@ -14,7 +14,7 @@ app.use(cors()); // Habilita CORS
 app.use(express.json()); // Permite recibir JSON en el body
 
 // Rutas
-app.use('/api', denunciaRoutes);
+app.use('/api/denuncias', denunciaRoutes);
 app.use('/api/auth', authRoutes);
 
 // Ruta base para verificar que el servidor corre

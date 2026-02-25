@@ -102,4 +102,115 @@ const createDenuncia = async (req, res) => {
     }
 };
 
-module.exports = { createDenuncia };
+// --- GESTIÓN DE CASOS ---
+
+const getCases = async (req, res) => {
+    try {
+        const { id, role } = req.user;
+        let query = supabase
+            .from('denuncias')
+            .select(`
+                *,
+                user:user_id (id, username, full_name, role),
+                assigned_consultant:assigned_consultant_id (id, full_name, username)
+            `)
+            .order('created_at', { ascending: false });
+
+        if (role === 'citizen') {
+            query = query.eq('user_id', id);
+        }
+
+        const { data, error } = await query;
+        if (error) throw error;
+
+        res.json(data);
+    } catch (error) {
+        console.error('Error fetching cases:', error);
+        res.status(500).json({ message: 'Error al obtener casos' });
+    }
+};
+
+const takeCase = async (req, res) => {
+    try {
+        const { id: userId, role } = req.user;
+        const { id: caseId } = req.params;
+
+        if (role !== 'consultant') return res.status(403).json({ message: 'Solo consultores.' });
+
+        const { data: existing, error: fetchError } = await supabase
+            .from('denuncias')
+            .select('assigned_consultant_id')
+            .eq('id', caseId)
+            .single();
+
+        if (fetchError) throw fetchError;
+        if (existing.assigned_consultant_id) return res.status(400).json({ message: 'Caso ya asignado.' });
+
+        const { error } = await supabase
+            .from('denuncias')
+            .update({ assigned_consultant_id: userId, status: 'in_progress' })
+            .eq('id', caseId);
+
+        if (error) throw error;
+        res.json({ message: 'Caso asignado.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al tomar caso.' });
+    }
+};
+
+const updateStatus = async (req, res) => {
+    try {
+        const { id: userId, role } = req.user;
+        const { id: caseId } = req.params;
+        const { status } = req.body;
+
+        if (!['pending', 'in_progress', 'resolved', 'dismissed'].includes(status)) {
+            return res.status(400).json({ message: 'Estado inválido.' });
+        }
+
+        // Check ownership if consultant
+        if (role === 'consultant') {
+            const { data } = await supabase.from('denuncias').select('assigned_consultant_id').eq('id', caseId).single();
+            if (!data || data.assigned_consultant_id !== userId) {
+                return res.status(403).json({ message: 'No tienes permiso.' });
+            }
+        } else if (role !== 'admin') {
+            return res.status(403).json({ message: 'No autorizado.' });
+        }
+
+        const { error } = await supabase.from('denuncias').update({ status }).eq('id', caseId);
+        if (error) throw error;
+        res.json({ message: 'Estado actualizado.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error actualizando estado.' });
+    }
+};
+
+const assignConsultant = async (req, res) => {
+    try {
+        if (req.user.role !== 'admin') return res.status(403).json({ message: 'Solo admin.' });
+        const { id: caseId } = req.params;
+        const { consultantId } = req.body;
+
+        const { error } = await supabase
+            .from('denuncias')
+            .update({ assigned_consultant_id: consultantId })
+            .eq('id', caseId);
+
+        if (error) throw error;
+        res.json({ message: 'Asignación actualizada.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error asignando.' });
+    }
+};
+
+module.exports = { 
+    createDenuncia,
+    getCases,
+    takeCase,
+    updateStatus,
+    assignConsultant
+};

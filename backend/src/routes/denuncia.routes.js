@@ -1,8 +1,11 @@
 const { Router } = require('express');
-const { createDenuncia } = require('../controllers/denuncia.controller');
+const { createDenuncia, getCases, takeCase, updateStatus, assignConsultant } = require('../controllers/denuncia.controller');
 const multer = require('multer');
 
 const router = Router();
+const { verifyToken } = require('../middleware/auth.middleware');
+
+router.use(verifyToken);
 
 // Configuración de Multer
 const storage = multer.memoryStorage(); // Guardamos en memoria para procesar o subir a la nube luego
@@ -19,7 +22,14 @@ const uploadFields = upload.fields([
     { name: 'supportingDocs', maxCount: 10 }
 ]);
 
-// Define el endpoint para recibir denuncias
-router.post('/denuncias', uploadFields, createDenuncia);
+// Endpoint para crear denuncia
+// La ruta es /api/denuncias segun index.js? Verificaremos.
+router.post('/', uploadFields, createDenuncia);
+
+// Endpoints de Gestión de Casos
+router.get('/', getCases);
+router.put('/:id/take', takeCase);
+router.put('/:id/status', updateStatus);
+router.put('/:id/assign', assignConsultant);
 
 module.exports = router;
