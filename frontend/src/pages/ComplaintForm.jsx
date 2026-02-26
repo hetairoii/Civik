@@ -78,9 +78,18 @@ export const ComplaintForm = () => {
             });
 
             // Enviamos el objeto FormData en lugar del JSON
+            // IMPORTANTE: Incluir token JWT en los headers para autenticación
+            const token = localStorage.getItem('token');
+            if (!token) {
+                 setErrors(prev => ({ ...prev, submit: "Error de autenticación: No has iniciado sesión." }));
+                 setIsSubmitting(false);
+                 return;
+            }
+
             const response = await axios.post('http://localhost:3000/api/denuncias', data, {
                 headers: {
-                    'Content-Type': 'multipart/form-data' // Importante para subida de archivos
+                    'Content-Type': 'multipart/form-data', // Importante para subida de archivos
+                    'Authorization': `Bearer ${token}` // Token necesario para backend (req.user)
                 }
             });
             

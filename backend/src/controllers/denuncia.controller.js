@@ -1,4 +1,5 @@
 const supabase = require('../config/supabase');
+const { sendStatusUpdateEmail } = require('../utils/mailer');
 
 const createDenuncia = async (req, res) => {
     try {
@@ -130,6 +131,37 @@ const getCases = async (req, res) => {
     }
 };
 
+const getDenunciaById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { id: userId, role } = req.user;
+
+        const { data, error } = await supabase
+            .from('denuncias')
+            .select(`
+                *,
+                user:user_id (id, username, full_name, role, email),
+                assigned_consultant:assigned_consultant_id (id, full_name, username),
+                denuncia_archivos (*)
+            `)
+            .eq('id', id)
+            .single();
+
+        if (error) throw error;
+        if (!data) return res.status(404).json({ message: 'Denuncia no encontrada' });
+
+        // Access Control logic
+        if (role === 'citizen' && data.user_id !== userId) {
+            return res.status(403).json({ message: 'No tienes permiso para ver esta denuncia.' });
+        }
+
+        res.json(data);
+    } catch (error) {
+        console.error('Error fetching denuncia details:', error);
+        res.status(500).json({ message: 'Error al obtener detalles de la denuncia' });
+    }
+};
+
 const takeCase = async (req, res) => {
     try {
         const { id: userId, role } = req.user;
@@ -139,19 +171,26 @@ const takeCase = async (req, res) => {
 
         const { data: existing, error: fetchError } = await supabase
             .from('denuncias')
-            .select('assigned_consultant_id')
+            .select('assigned_consultant_id, user:user_id(email)')
             .eq('id', caseId)
             .single();
 
         if (fetchError) throw fetchError;
         if (existing.assigned_consultant_id) return res.status(400).json({ message: 'Caso ya asignado.' });
 
+        // Update status and assignee
         const { error } = await supabase
             .from('denuncias')
             .update({ assigned_consultant_id: userId, status: 'in_progress' })
             .eq('id', caseId);
 
         if (error) throw error;
+
+        // Notify User
+        if (existing.user && existing.user.email) {
+            await sendStatusUpdateEmail(existing.user.email, caseId, 'En Progreso (Asignado a Consultor)');
+        }
+
         res.json({ message: 'Caso asignado.' });
     } catch (error) {
         console.error(error);
@@ -181,6 +220,18 @@ const updateStatus = async (req, res) => {
 
         const { error } = await supabase.from('denuncias').update({ status }).eq('id', caseId);
         if (error) throw error;
+
+        // Get user email to notify
+        const { data: caseData } = await supabase
+            .from('denuncias')
+            .select('user:user_id(email)')
+            .eq('id', caseId)
+            .single();
+
+        if (caseData && caseData.user && caseData.user.email) {
+            await sendStatusUpdateEmail(caseData.user.email, caseId, status);
+        }
+
         res.json({ message: 'Estado actualizado.' });
     } catch (error) {
         console.error(error);
@@ -196,10 +247,22 @@ const assignConsultant = async (req, res) => {
 
         const { error } = await supabase
             .from('denuncias')
-            .update({ assigned_consultant_id: consultantId })
+            .update({ assigned_consultant_id: consultantId, status: 'in_progress' })
             .eq('id', caseId);
 
         if (error) throw error;
+
+        // Get user email to notify
+        const { data: caseData } = await supabase
+            .from('denuncias')
+            .select('user:user_id(email)')
+            .eq('id', caseId)
+            .single();
+
+        if (caseData && caseData.user && caseData.user.email) {
+            await sendStatusUpdateEmail(caseData.user.email, caseId, 'En Progreso (Reasignado por Admin)');
+        }
+
         res.json({ message: 'Asignación actualizada.' });
     } catch (error) {
         console.error(error);
@@ -210,6 +273,7 @@ const assignConsultant = async (req, res) => {
 module.exports = { 
     createDenuncia,
     getCases,
+    getDenunciaById,
     takeCase,
     updateStatus,
     assignConsultant

@@ -6,6 +6,11 @@ import { ComplaintForm } from './pages/ComplaintForm';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { AdminDashboard } from './pages/AdminDashboard';
+import { Cases } from './pages/Cases';
+import { CaseDetails } from './pages/CaseDetails';
+import { Profile } from './pages/Profile';
+import { VerifyEmail } from './pages/VerifyEmail';
+import { ForgotPassword, ResetPassword } from './pages/ForgotPassword';
 import './App.css'
 
 function App() {
@@ -21,6 +26,12 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Register />} />              
               <Route path="/admin" element={<AdminDashboard />} /> 
+              <Route path="/casos" element={<Cases />} />
+              <Route path="/casos/:id" element={<CaseDetails />} />
+              <Route path="/perfil" element={<Profile />} />
+              <Route path="/verify-email" element={<VerifyEmail />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
             </Routes>
           </main>
         </div>

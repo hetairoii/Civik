@@ -1,5 +1,7 @@
 import { Card } from "./Card"
 import IconLaw from '../assets/images/icon-law.png'
+import ddhhIcon from '../assets/images/derechos-humanos.png'
+import documentIcon from '../assets/images/document-icon.png'
 
 export const CardsContainer = () => {
   
@@ -16,15 +18,14 @@ export const CardsContainer = () => {
         title: 'Gestión Documental',
         description: 'Ayudamos en la tramitación y gestión segura de documentos legales y denuncias.',
         // Placeholder for missing image
-        img: 'https://cdn-icons-png.flaticon.com/512/2921/2921222.png', 
+        img: documentIcon, 
         color: ''
     },
     {
         id:3,
         title: 'Protección de DDHH',
         description: 'Canalizamos denuncias sobre violaciones de Derechos Humanos ante los organismos competentes.',
-        // Placeholder for missing image
-        img: 'https://cdn-icons-png.flaticon.com/512/924/924915.png', 
+        img: ddhhIcon,
         color: ''
     },
   ]

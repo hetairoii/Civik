@@ -46,24 +46,60 @@ export const Login = () => {
         if (error) setError('');
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setError(''); // Limpiar errores previos
         
-        if (!validateInput(identifier)) {
-            let msg = '';
-            switch(loginMethod) {
-                case 'email': msg = 'Por favor ingresa un correo válido'; break;
-                case 'cedula': msg = 'La cédula debe contener solo números'; break;
-                case 'username': msg = 'El usuario contiene caracteres inválidos'; break;
-                default: msg = 'Formato inválido';
-            }
+        // Validación del lado del cliente (opcional, ya tienes validateInput)
+        let isValid = true;
+        let msg = '';
+        if (loginMethod === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier)) {
+             msg = 'Por favor ingresa un correo válido'; isValid = false;
+        } else if (loginMethod === 'cedula' && !/^\d+$/.test(identifier)) {
+             msg = 'La cédula debe contener solo números'; isValid = false;
+        } else if (loginMethod === 'username' && !/^[a-zA-Z0-9_.]+$/.test(identifier)) {
+             msg = 'El usuario contiene caracteres inválidos'; isValid = false;
+        }
+
+        if (!isValid) {
             setError(msg);
             return;
         }
 
-        console.log(`Iniciando sesión con ${loginMethod}:`, identifier);
-        // Aquí iría la lógica de fetch al endpoint correspondiente según loginMethod
-        navigate('/');
+        try {
+            const response = await fetch('http://localhost:3000/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    identifier,
+                    password,
+                    loginMethod
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Error al iniciar sesión');
+            }
+
+            // Guardar token y usuario
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+
+            // Redireccionar según el rol si es necesario, o al home
+            if (data.user.role === 'admin') {
+                navigate('/admin');
+            } else {
+                navigate('/');
+            }
+
+        } catch (err) {
+            console.error('Login error:', err);
+            setError(err.message);
+        }
     };
 
   return (
@@ -162,9 +198,14 @@ export const Login = () => {
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Contraseña
-                </label>
+                <div className="flex justify-between items-center mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Contraseña
+                    </label>
+                    <Link to="/forgot-password" class="text-xs text-[var(--color-brand-green)] hover:underline">
+                        ¿Olvidaste tu contraseña?
+                    </Link>
+                </div>
                 <input 
                     required 
                     type="password" 

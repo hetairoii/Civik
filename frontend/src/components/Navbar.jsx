@@ -67,9 +67,17 @@ export const Navbar = () => {
                             </Link>
                         )}
 
-                        <a href="#" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-[var(--color-brand-green)] dark:hover:text-white transition-colors">
-                            Casos
-                        </a>
+                        {/* Citizen Profile & Cases (Simplified for now) */}
+                        {user && (
+                            <>
+                                <Link to="/casos" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-[var(--color-brand-green)] dark:hover:text-white transition-colors">
+                                    Casos
+                                </Link>
+                                <Link to="/perfil" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-[var(--color-brand-green)] dark:hover:text-white transition-colors">
+                                    Perfil
+                                </Link>
+                            </>
+                        )}
                         
                         <div className="h-6 w-px bg-gray-200 dark:bg-gray-700 mx-2"></div>
 
@@ -129,17 +137,25 @@ export const Navbar = () => {
             {isOpen && (
                 <div className="md:hidden bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 absolute w-full shadow-xl">
                     <div className="px-4 py-4 space-y-3">
+                        {/* Mobile Links */}
                         <Link to="/" onClick={() => setIsOpen(false)} className="block text-base font-medium text-gray-700 dark:text-gray-200">
                             Inicio
                         </Link>
+                        {user && (
+                            <Link to="/perfil" onClick={() => setIsOpen(false)} className="block text-base font-medium text-gray-700 dark:text-gray-200">
+                                Mi Perfil
+                            </Link>
+                        )}
                         {user?.role === 'admin' && (
                              <Link to="/admin" onClick={() => setIsOpen(false)} className="block text-base font-medium text-blue-600 dark:text-blue-400">
                                 Panel Admin
                             </Link>
                         )}
-                        <a href="#" className="block text-base font-medium text-gray-700 dark:text-gray-200">
-                            Casos
-                        </a>
+                        {user && (
+                            <Link to="/casos" onClick={() => setIsOpen(false)} className="block text-base font-medium text-gray-700 dark:text-gray-200">
+                                Casos
+                            </Link>
+                        )}
                         
                         <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
                             {user ? (

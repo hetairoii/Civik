@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { createDenuncia, getCases, takeCase, updateStatus, assignConsultant } = require('../controllers/denuncia.controller');
+const { createDenuncia, getCases, getDenunciaById, takeCase, updateStatus, assignConsultant } = require('../controllers/denuncia.controller');
 const multer = require('multer');
 
 const router = Router();
@@ -28,6 +28,7 @@ router.post('/', uploadFields, createDenuncia);
 
 // Endpoints de Gestión de Casos
 router.get('/', getCases);
+router.get('/:id', getDenunciaById);
 router.put('/:id/take', takeCase);
 router.put('/:id/status', updateStatus);
 router.put('/:id/assign', assignConsultant);
