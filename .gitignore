@@ -9,4 +9,4 @@ backend/scripts/createAdmin.js
 
 #database files
 backend/supabase_schema.sql
-backend/migration_auth.sql
+backend/migration_auth_updates.sql
