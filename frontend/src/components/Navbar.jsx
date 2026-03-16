@@ -48,7 +48,7 @@ export const Navbar = () => {
                     {/* Logo Area */}
                     <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
                          {/* Logo Placeholder - You can replace src with your actual logo path */}
-                        <img src={theme === 'dark' ? '../public/civik-logo-dark.png' : '../public/civik-logo.png'} alt="Civik Logo" className="h-8 w-8" />
+                        <img src={theme === 'dark' ? '../../public/civik-logo-dark.png' : '../../public/civik-logo.png'} alt="Civik Logo" className="h-8 w-8" />
                         <span className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">
                             Civik
                         </span>
