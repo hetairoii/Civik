@@ -38,7 +38,7 @@ export const Cases = () => {
         try {
             setLoading(true);
             const token = localStorage.getItem('token');
-            const res = await fetch('http://localhost:3000/api/denuncias', {
+            const res = await fetch(import.meta.env.VITE_API_URL + '/api/denuncias', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             
@@ -59,7 +59,7 @@ export const Cases = () => {
             const token = localStorage.getItem('token');
             // Assuming we reuse the endpoint but filter for approved consultants
             // Or create a new endpoint. For now, let's assume we implement GET /api/users?role=consultant
-            const res = await fetch('http://localhost:3000/api/users?role=consultant', {
+            const res = await fetch(import.meta.env.VITE_API_URL + '/api/users?role=consultant', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (res.ok) {
@@ -75,7 +75,7 @@ export const Cases = () => {
         if (!window.confirm("¿Seguro que deseas tomar este caso?")) return;
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch(`http://localhost:3000/api/denuncias/${caseId}/take`, {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/denuncias/${caseId}/take`, {
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -96,7 +96,7 @@ export const Cases = () => {
     const handleUpdateStatus = async (caseId, newStatus) => {
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch(`http://localhost:3000/api/denuncias/${caseId}/status`, {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/denuncias/${caseId}/status`, {
                 method: 'PUT',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -119,7 +119,7 @@ export const Cases = () => {
     const handleAssignConsultant = async (caseId, consultantId) => {
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch(`http://localhost:3000/api/denuncias/${caseId}/assign`, {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/denuncias/${caseId}/assign`, {
                 method: 'PUT',
                 headers: { 
                     'Content-Type': 'application/json',

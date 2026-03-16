@@ -15,7 +15,7 @@ export const CaseDetails = () => {
         const fetchCaseDetails = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const res = await fetch(`http://localhost:3000/api/denuncias/${id}`, {
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/api/denuncias/${id}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 

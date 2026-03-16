@@ -12,7 +12,7 @@ export const AdminDashboard = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const API_URL = 'http://localhost:3000/api/auth'; 
+  const API_URL = import.meta.env.VITE_API_URL + '/api/auth'; 
 
   // Check auth & role on mount (simple client-side check)
   useEffect(() => {

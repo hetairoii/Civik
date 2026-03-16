@@ -86,7 +86,7 @@ export const ComplaintForm = () => {
                  return;
             }
 
-            const response = await axios.post('http://localhost:3000/api/denuncias', data, {
+            const response = await axios.post(import.meta.env.VITE_API_URL + '/api/denuncias', data, {
                 headers: {
                     'Content-Type': 'multipart/form-data', // Importante para subida de archivos
                     'Authorization': `Bearer ${token}` // Token necesario para backend (req.user)

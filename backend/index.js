@@ -10,7 +10,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors()); // Habilita CORS
+const corsOptions = {
+    origin: process.env.FRONTEND_URL || '*', // En producción, usar la URL de Netlify
+    optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions)); // Habilita CORS
 app.use(express.json()); // Permite recibir JSON en el body
 
 // Rutas

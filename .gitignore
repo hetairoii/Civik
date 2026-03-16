@@ -3,6 +3,13 @@ node_modules
 
 #environment variables
 .env
+.env.local
+.env.development
+.env.test
+.env.production
+backend/.env
+frontend/.env
+frontend/.env.local
 
 #scripts
 backend/scripts/createAdmin.js

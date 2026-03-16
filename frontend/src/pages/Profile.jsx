@@ -14,7 +14,7 @@ export const Profile = () => {
                 const token = localStorage.getItem('token');
                 if (!token) throw new Error('No has iniciado sesión.');
 
-                const res = await fetch('http://localhost:3000/api/auth/me', {
+                const res = await fetch(import.meta.env.VITE_API_URL + '/api/auth/me', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
